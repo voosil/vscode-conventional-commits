@@ -70,7 +70,7 @@
       "properties": {
         "conventionalCommits.autoCommit": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "markdownDescription": "%extension.configuration.autoCommit.markdownDescription%"
         },
         "conventionalCommits.silentAutoCommit": {
@@ -181,9 +181,10 @@
   "dependencies": {
     "@commitlint/cli": "^13.0.0",
     "@commitlint/config-conventional": "^13.0.0",
+    "@commitlint/config-nx-scopes": "^18.5.1",
     "@commitlint/load": "^13.0.0",
     "@commitlint/rules": "^13.0.0",
-    "@yi-xu-0100/conventional-commit-types-i18n": "1.6.0"
+    "@yi-xu-0100/conventional-commit-types-i18n": "^1.6.0"
   },
   "commitlint": {
     "extends": [

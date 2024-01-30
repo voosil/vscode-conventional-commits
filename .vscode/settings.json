@@ -7,5 +7,6 @@
   },
   "typescript.tsc.autoDetect": "off",
   "svg.preview.background": "black",
-  "conventionalCommits.emojiFormat": "code"
+  "conventionalCommits.emojiFormat": "code",
+  "conventionalCommits.scopes": ["commit-scope"]
 }

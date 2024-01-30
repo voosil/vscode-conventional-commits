@@ -80,13 +80,13 @@ export default async function prompts({
         return {
           label: type,
           description: title,
-          detail: description,
+          detail: commitlint.getTypeDetail(type)?.description ?? description,
         };
       }
       return {
         label: type,
         description: '',
-        detail: getPromptLocalize('type.fromCommitlintConfig'),
+        detail: commitlint.getTypeDetail(type)?.description ?? '',
       };
     });
   }
@@ -101,19 +101,17 @@ export default async function prompts({
       detail: getPromptLocalize('scope.noneItem.detail'),
       alwaysShow: true,
     };
+
+    const items = commitlint.getSortedClassifiedScopeItems();
+
     if (scopeEnum.length) {
       return {
         type: PROMPT_TYPES.QUICK_PICK,
         name,
         placeholder,
-        items: scopeEnum.map(function (scope): Item {
-          return {
-            label: scope,
-            description: '',
-            detail: getPromptLocalize('type.fromCommitlintConfig'),
-          };
-        }),
-        noneItem,
+        items,
+        canSelectMany: true,
+        ...(commitlint.canScopeBeEmpty() ? noneItem : {}),
       };
     }
 
@@ -129,7 +127,7 @@ export default async function prompts({
         alwaysShow: true,
         placeholder: getPromptLocalize('scope.newItem.placeholder'),
       },
-      noneItem,
+      ...(commitlint.canScopeBeEmpty() ? noneItem : {}),
       newItemWithoutSetting: {
         label: getPromptLocalize('scope.newItemWithoutSetting.label'),
         description: '',
@@ -140,6 +138,7 @@ export default async function prompts({
       validate(input: string) {
         return commitlint.lintScope(input);
       },
+      canSelectMany: true,
     };
   }
 
@@ -351,6 +350,13 @@ export default async function prompts({
     index += 1;
   }
 
+  const convertScopePrompt = (activeItems: Item[]) => {
+    const { scopeEnumSeparator } = commitlint.promptSettings ?? {};
+    return activeItems
+      .map(({ cls, label }) => (cls ? `${cls}/${label}` : label))
+      .join(scopeEnumSeparator ?? ',');
+  };
+
   promptStatuses
     .map((p, index) => {
       const activeItem = p.activeItems[0];
@@ -364,6 +370,10 @@ export default async function prompts({
         activeItem === questions[index].newItemWithoutSetting
       )
         return p.value;
+      // scope items
+      if (index === 1) {
+        return convertScopePrompt(p.activeItems);
+      }
       return activeItem.label;
     })
     .forEach((value, index) => {

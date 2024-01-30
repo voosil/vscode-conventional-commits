@@ -20,6 +20,8 @@ export type Item = {
   description?: string;
   alwaysShow?: boolean;
   placeholder?: string;
+  kind?: number;
+  cls?: string;
 };
 
 export type Prompt = { name: string; type: PROMPT_TYPES } & Options &
@@ -36,6 +38,7 @@ type Options = {
   step: number;
   totalSteps: number;
   buttons?: vscode.QuickInputButton[];
+  canSelectMany?: boolean;
 };
 
 type QuickPickOptions = {
@@ -53,6 +56,7 @@ async function createQuickPick({
   totalSteps,
   noneItem,
   buttons = [],
+  canSelectMany = false,
 }: QuickPickOptions): Promise<PromptStatus> {
   if (noneItem && !items.includes(noneItem)) {
     items.unshift(noneItem);
@@ -68,6 +72,7 @@ async function createQuickPick({
     step,
     totalSteps,
     buttons,
+    canSelectMany,
   });
   return promptStatus;
 }
@@ -162,6 +167,7 @@ async function createConfigurableQuickPick({
   newItemWithoutSetting,
   validate = () => undefined,
   buttons,
+  canSelectMany = false,
 }: ConfigurableQuickPickOptions): Promise<PromptStatus> {
   const currentValues: string[] = configuration.get<string[]>(configurationKey);
   const workspaceConfigurationItemInfo = {
@@ -207,6 +213,7 @@ async function createConfigurableQuickPick({
     totalSteps,
     noneItem,
     buttons,
+    canSelectMany,
   });
   if (
     promptStatus.activeItems[0] &&

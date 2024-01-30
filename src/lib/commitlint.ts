@@ -5,18 +5,42 @@
 import load from '@commitlint/load/lib/load';
 import rules from '@commitlint/rules';
 import { RulesConfig, RuleConfigSeverity } from '@commitlint/types/lib/rules';
+import { PromptConfig } from '@commitlint/types/lib/prompt';
 import { Commit } from '@commitlint/types/lib/parse';
 import * as output from './output';
+import { ConfigForPlugin, ScopeCls } from './scope-cls';
+
+type DeepPartial<T> = {
+  [P in keyof T]?: {
+    [K in keyof T[P]]?: T[P][K];
+  };
+};
+
+// type ScopeRuleConfig = [RuleConfigSeverity, 'never' | 'always', string[]];
+
+interface CustomPrompt extends DeepPartial<PromptConfig> {
+  forVscodePlugin: {
+    ConventionalCommitPlugin: ConfigForPlugin;
+  };
+}
 
 class Commitlint {
   private ruleConfigs: Partial<RulesConfig> = {};
+  private promptConfigs: PromptConfig = {} as PromptConfig;
+  private pluginConfig: ConfigForPlugin = {} as ConfigForPlugin;
+  private scopeClsIns: ScopeCls | undefined;
 
   async loadRuleConfigs(cwd: string): Promise<Partial<RulesConfig>> {
     async function getRuleConfigs() {
       try {
-        const { rules } = await load({}, { cwd });
+        const { rules, prompt } = await load({}, { cwd });
+        const customPrompt = prompt as CustomPrompt;
         output.info('Load commitlint configuration successfully.');
-        return rules;
+        return {
+          rules,
+          prompt,
+          pluginConfig: customPrompt?.forVscodePlugin?.ConventionalCommitPlugin,
+        };
       } catch (e) {
         // Catch if `Cannot find module "@commitlint/config-conventional"` happens.
         if (e.message.startsWith('Cannot find module')) {
@@ -30,7 +54,12 @@ class Commitlint {
         return {};
       }
     }
-    this.ruleConfigs = await getRuleConfigs();
+    const { rules, prompt, pluginConfig } = await getRuleConfigs();
+    this.ruleConfigs = rules as RulesConfig;
+    this.promptConfigs = prompt as PromptConfig;
+    this.pluginConfig = pluginConfig as ConfigForPlugin;
+    this.scopeClsIns = new ScopeCls(this.promptConfigs, this.pluginConfig);
+
     return this.ruleConfigs;
   }
 
@@ -41,9 +70,9 @@ class Commitlint {
     }
     // @ts-ignore
     const [level, condition, value] = config;
-    if (level !== RuleConfigSeverity.Error) {
-      return [];
-    }
+    // if (level !== RuleConfigSeverity.Error) {
+    //   return [];
+    // }
     if (condition === 'never') {
       return [];
     }
@@ -85,6 +114,23 @@ class Commitlint {
 
   getScopeEnum() {
     return this.getEnum('scope-enum');
+  }
+
+  getTypeDetail(type: string) {
+    return this.promptConfigs.questions.type?.enum?.[type];
+  }
+
+  getScopeDetail(scope: string) {
+    return this.promptConfigs.questions.scope?.enum?.[scope];
+  }
+
+  getSortedClassifiedScopeItems() {
+    return this.scopeClsIns?.run() ?? [];
+  }
+
+  get promptSettings() {
+    // @ts-ignore
+    return this.promptConfigs.settings;
   }
 
   lintType(type: string) {
@@ -139,6 +185,20 @@ class Commitlint {
       'footer-min-length',
       'footer-max-length',
     ]);
+  }
+
+  canScopeBeEmpty() {
+    const scopeEmptyRule = this.ruleConfigs?.['scope-empty'] as [
+      number,
+      string,
+    ];
+    if (
+      scopeEmptyRule &&
+      scopeEmptyRule[1] === 'never' &&
+      scopeEmptyRule[0] === 2
+    )
+      return false;
+    return true;
   }
 }
 

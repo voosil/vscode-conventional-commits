@@ -17,6 +17,7 @@ export default function createQuickPick<T extends vscode.QuickPickItem>({
   step,
   totalSteps,
   buttons = [],
+  canSelectMany = false,
 }: Partial<vscode.QuickPick<T>>): Promise<{
   value: string;
   activeItems: T[];
@@ -34,6 +35,7 @@ export default function createQuickPick<T extends vscode.QuickPickItem>({
     picker.totalSteps = totalSteps;
     picker.show();
     picker.buttons = [...buttons, confirmButton];
+    picker.canSelectMany = canSelectMany;
     picker.onDidAccept(function () {
       if (picker.activeItems.length) {
         resolve({
@@ -42,6 +44,9 @@ export default function createQuickPick<T extends vscode.QuickPickItem>({
         });
         picker.dispose();
       }
+    });
+    picker.onDidChangeSelection(function (e) {
+      picker.activeItems = e;
     });
     picker.onDidTriggerButton(function (e) {
       if (e === confirmButton) {
