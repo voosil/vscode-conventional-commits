@@ -353,7 +353,7 @@ export default async function prompts({
   const convertScopePrompt = (activeItems: Item[]) => {
     const { scopeEnumSeparator } = commitlint.promptSettings ?? {};
     return activeItems
-      .map(({ cls, label }) => (cls ? `${cls}/${label}` : label))
+      .map(({ cls, label }) => label)
       .join(scopeEnumSeparator ?? ',');
   };
 
