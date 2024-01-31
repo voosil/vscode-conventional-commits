@@ -33,7 +33,7 @@ class Commitlint {
   async loadRuleConfigs(cwd: string): Promise<Partial<RulesConfig>> {
     async function getRuleConfigs() {
       try {
-        const { rules, prompt } = await load({}, { cwd });
+        const { rules = {}, prompt = {} } = await load({}, { cwd });
         const customPrompt = prompt as CustomPrompt;
         output.info('Load commitlint configuration successfully.');
         return {
@@ -64,7 +64,7 @@ class Commitlint {
   }
 
   private getEnum(key: keyof RulesConfig) {
-    const config = this.ruleConfigs[key];
+    const config = this.ruleConfigs?.[key];
     if (!config) {
       return [];
     }

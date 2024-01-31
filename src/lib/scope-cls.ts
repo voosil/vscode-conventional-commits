@@ -1,5 +1,6 @@
 import { PromptConfig } from '@commitlint/types/lib/prompt';
 import { Item } from './prompts/prompt-types';
+import { set } from 'lodash';
 
 export interface ConfigForPlugin {
   // scope在列表中显示的优先级，值越小优先级越高
@@ -44,13 +45,13 @@ export class ScopeCls {
   }
 
   get scope() {
-    if (!this.prompt.questions.scope) {
-      this.prompt.questions.scope = { enum: {} };
-    }
-    if (!this.prompt.questions.scope.enum) {
-      this.prompt.questions.scope.enum = {};
-    }
-    return this.prompt.questions.scope.enum;
+    set(
+      this.prompt,
+      'questions.scope.enum',
+      this.prompt?.questions?.scope?.enum ?? {},
+    );
+
+    return this.prompt?.questions.scope!.enum!;
   }
 
   /**

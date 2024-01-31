@@ -120,6 +120,46 @@ const config = {
         },
       },
       {
+        enforce: 'pre',
+        test: /cosmiconfig[\/\\]dist[\/\\]loaders.js/,
+        loader: 'string-replace-loader',
+        options: {
+          multiple: [
+            {
+              search: "yaml = require('js-yaml');",
+              replace: "yaml = __non_webpack_require__('js-yaml');",
+              strict: true,
+            },
+            {
+              search: "typescript = require('typescript');",
+              replace: "typescript = __non_webpack_require__('typescript');",
+              strict: true,
+            },
+            {
+              search: "importFresh = require('import-fresh');",
+              replace: "importFresh = __non_webpack_require__('import-fresh');",
+              strict: true,
+            },
+            {
+              search: 'exports.loadJson = loadJson;',
+              replace:
+                "parseJson=require('parse-json');exports.loadJson = (_,c)=> parseJson(c);",
+              strict: true,
+            },
+            {
+              search: "(await import('typescript')).default",
+              replace: "(await __non_webpack_require__('typescript')).default",
+              strict: true,
+            },
+            {
+              search: /return \(await import\(href\)\)\.default;/g,
+              replace: 'return (await __non_webpack_require__(href)).default;',
+              strict: true,
+            },
+          ],
+        },
+      },
+      {
         test: /\.ts$/,
         exclude: /node_modules/,
         use: [

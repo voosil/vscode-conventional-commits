@@ -13,7 +13,8 @@
       "args": [
         "--disable-extensions",
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "e:\\Code\\WorkSpace\\Web-Projects\\nx-workspace"
+        // "--folder-uri=e:\\Code\\github-open-sources\\think"
+        "--folder-uri=e:\\Code\\WorkSpace\\nx-workspace"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
