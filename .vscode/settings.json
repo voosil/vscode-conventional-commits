@@ -8,5 +8,6 @@
   "typescript.tsc.autoDetect": "off",
   "svg.preview.background": "black",
   "conventionalCommits.emojiFormat": "code",
-  "conventionalCommits.scopes": ["commit-scope"]
+  "conventionalCommits.scopes": ["commit-scope"],
+  "cSpell.words": ["Commitlint", "nxdir"]
 }

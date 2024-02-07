@@ -45,11 +45,6 @@
   dependencies:
     conventional-changelog-conventionalcommits "^4.3.1"
 
-"@commitlint/config-nx-scopes@^18.5.1":
-  version "18.5.1"
-  resolved "https://registry.npmmirror.com/@commitlint/config-nx-scopes/-/config-nx-scopes-18.5.1.tgz#f22c7029f669066075fc8473802bc91a33702f3c"
-  integrity sha512-lppc9tXOQ7PO2AYwrMbfAQfLJZuXr/+qT2L6ebpm8N1i2GwONiwIReWgUWhaeb2uYGKQeSmje24xHtYiMR1ohA==
-
 "@commitlint/config-validator@^18.6.0":
   version "18.6.0"
   resolved "https://registry.npmmirror.com/@commitlint/config-validator/-/config-validator-18.6.0.tgz#ea1e04e92829dd7b90cea444f245b0bdefa0a586"

@@ -7,8 +7,9 @@ import rules from '@commitlint/rules';
 import { RulesConfig, RuleConfigSeverity } from '@commitlint/types/lib/rules';
 import { PromptConfig } from '@commitlint/types/lib/prompt';
 import { Commit } from '@commitlint/types/lib/parse';
-import * as output from './output';
 import { ConfigForPlugin, ScopeCls } from './scope-cls';
+import * as configuration from './configuration';
+import * as output from './output';
 
 type DeepPartial<T> = {
   [P in keyof T]?: {
@@ -18,29 +19,17 @@ type DeepPartial<T> = {
 
 // type ScopeRuleConfig = [RuleConfigSeverity, 'never' | 'always', string[]];
 
-interface CustomPrompt extends DeepPartial<PromptConfig> {
-  forVscodePlugin: {
-    ConventionalCommitPlugin: ConfigForPlugin;
-  };
-}
-
 class Commitlint {
   private ruleConfigs: Partial<RulesConfig> = {};
   private promptConfigs: PromptConfig = {} as PromptConfig;
-  private pluginConfig: ConfigForPlugin = {} as ConfigForPlugin;
   private scopeClsIns: ScopeCls | undefined;
 
   async loadRuleConfigs(cwd: string): Promise<Partial<RulesConfig>> {
     async function getRuleConfigs() {
       try {
         const { rules = {}, prompt = {} } = await load({}, { cwd });
-        const customPrompt = prompt as CustomPrompt;
         output.info('Load commitlint configuration successfully.');
-        return {
-          rules,
-          prompt,
-          pluginConfig: customPrompt?.forVscodePlugin?.ConventionalCommitPlugin,
-        };
+        return { rules, prompt };
       } catch (e) {
         // Catch if `Cannot find module "@commitlint/config-conventional"` happens.
         if (e.message.startsWith('Cannot find module')) {
@@ -54,11 +43,16 @@ class Commitlint {
         return {};
       }
     }
-    const { rules, prompt, pluginConfig } = await getRuleConfigs();
+    const { rules, prompt } = await getRuleConfigs();
     this.ruleConfigs = rules as RulesConfig;
     this.promptConfigs = prompt as PromptConfig;
-    this.pluginConfig = pluginConfig as ConfigForPlugin;
-    this.scopeClsIns = new ScopeCls(this.promptConfigs, this.pluginConfig);
+
+    const configForScopes: ConfigForPlugin = {
+      unclassifiedName: configuration.get('unclassifiedName'),
+      scopeClassificationKey: configuration.get('scopeClassificationKey'),
+      scopeListOrder: configuration.get('scopeListOrder'),
+    };
+    this.scopeClsIns = new ScopeCls(this.promptConfigs, configForScopes);
 
     return this.ruleConfigs;
   }

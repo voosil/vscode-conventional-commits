@@ -4,7 +4,7 @@
   "description": "💬Conventional Commits for VSCode.",
   "icon": "assets/icon.png",
   "publisher": "vivaxy",
-  "version": "1.25.0",
+  "version": "2.0.1",
   "engines": {
     "vscode": "^1.44.0"
   },
@@ -140,6 +140,36 @@
           "type": "boolean",
           "default": false,
           "markdownDescription": "%extension.configuration.editor.keepAfterSave.markdownDescription%"
+        },
+        "conventionalCommits.useNxScopes": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "%extension.configuration.useNxScopes%"
+        },
+        "conventionalCommits.nxdir": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "%extension.configuration.nxdir%"
+        },
+        "conventionalCommits.scopeClassificationKey": {
+          "type": "string",
+          "default": "title",
+          "markdownDescription": "%extension.configuration.scopeClassificationKey%"
+        },
+        "conventionalCommits.unclassifiedName": {
+          "type": "string",
+          "default": "custom",
+          "markdownDescription": "%extension.configuration.unclassifiedName%"
+        },
+        "conventionalCommits.scopeListOrder": {
+          "type": "array",
+          "default": [
+            "custom",
+            "application",
+            "library",
+            "test"
+          ],
+          "markdownDescription": "%extension.configuration.scopeListOrder%"
         }
       }
     }
@@ -181,7 +211,6 @@
   "dependencies": {
     "@commitlint/cli": "^13.0.0",
     "@commitlint/config-conventional": "^13.0.0",
-    "@commitlint/config-nx-scopes": "^18.5.1",
     "@commitlint/load": "^18.6.0",
     "@commitlint/rules": "^13.0.0",
     "@types/lodash": "^4.14.202",

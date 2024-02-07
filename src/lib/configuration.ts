@@ -24,6 +24,11 @@ export type Configuration = {
   promptCI: boolean;
   showNewVersionNotes: boolean;
   'editor.keepAfterSave': boolean;
+  useNxScopes: boolean;
+  nxdir: string;
+  unclassifiedName: string;
+  scopeClassificationKey: string;
+  scopeListOrder: string[];
 };
 
 export function getConfiguration() {
